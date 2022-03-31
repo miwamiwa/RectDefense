@@ -1,0 +1,23 @@
+enemies
+
+Bearing (Vector2d)
+Position (WorldPos)
+
+each tick
+
+- check if there is a clear path way to the left or to the right (if the next hallwayWidth/2 + 1 squares are free). If there are two directions available make a choice.
+
+- if yes, flag for turning left or right
+
+- before moving, check for collisions:
+
+- if turning, check if there is something on the square you'd turn towards
+
+- if no, then turn to next square, and this becomes the new direction you follow
+
+- if yes, then check if there is something on the square in front (wall or enemy)
+
+- if no, then move forward (remain flagged for turning)
+
+- if yes, wait for this tick.
+
