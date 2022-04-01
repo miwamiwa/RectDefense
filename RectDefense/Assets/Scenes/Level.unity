@@ -4932,6 +4932,7 @@ GameObject:
   - component: {fileID: 995422898}
   - component: {fileID: 995422897}
   - component: {fileID: 995422899}
+  - component: {fileID: 995422900}
   m_Layer: 0
   m_Name: MainManager
   m_TagString: MainManager
@@ -4982,17 +4983,25 @@ MonoBehaviour:
   BasicEnemy: {fileID: 2155473244721375523, guid: e2a457277668bf04ca8e060d2b4bdc2f, type: 3}
   enemies: []
   StartDirection: {x: 1, y: 0}
-  EnemiesPerWave: 12
-  ContinuousSpawning: 1
-  enemiesSpawnedThisWave: 0
-  enemiesSpawnedTotal: 0
-  Cutoff: 100
-  FirstEnemyTime: 3
-  Interval: 2
-  Spread: 1.85
+  ContinuousSpawning: 0
+  FirstEnemyTime: 1.5
+  Interval: 3
+  shortInterval: 0.2
   EnemyTickLength: 0.32
   StartTiles: []
   FinishTiles: []
+--- !u!114 &995422900
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 995422896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc7f02f25de04094596a154d8cc2707a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1284836505
 GameObject:
   m_ObjectHideFlags: 0

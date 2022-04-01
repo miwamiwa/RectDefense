@@ -1,0 +1,16 @@
+// Level Data
+// This is where levels and phases are set up
+// Separate levels with a #, and mark phases with a -
+// Any line that doesn't start with # or - gets ignored
+// for each phase, list the number of enemy groups of each size we want to spawn. 
+// The actual order will be randomized during game play. 
+// Group size isn't specified but rather it is determined by a number's position in the list.
+// for example: 3,5,8 means a phase will have 3 groups of 1, 5 groups of 2 and 8 groups of 3.
+
+# Level 1
+- 8,8,1
+
+# Level 2
+- 5,8 , 10 , 21
+- 2, 3, 2, 99
+
