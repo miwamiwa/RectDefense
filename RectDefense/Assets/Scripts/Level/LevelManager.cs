@@ -8,7 +8,11 @@ public class LevelManager : MonoBehaviour
     static public int CurrentPhase = 0;
 
     List<List<List<int>>> Levels;
+
+    // file in Resources folder
     string sourceFile = "LevelData";
+
+    // syntax
     char LevelSymbol = '#';
     char PhaseSymbol = '-';
     char Separator = ',';

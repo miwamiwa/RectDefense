@@ -4,19 +4,28 @@ using UnityEngine;
 
 public class Amno : MonoBehaviour
 {
-    bool ready = false;
+    // references 
+    EnemyController Target;
+    SpriteRenderer renderer;
+
+    // settings
     public float HitChance = 1f;
     public float TravelSpeed = 0.1f;
     public float Damage = 8f;
+
+    // ready to travel
+    bool ready = false;
     bool missed = false;
-    EnemyController Target;
-    SpriteRenderer renderer;
+    
     // Start is called before the first frame update
     void Start()
     {
         renderer = GetComponent<SpriteRenderer>();
     }
 
+    // SetupBullet()
+    //
+    // Called by Tower when ready to go
     public void SetupBullet(Vector3 position, EnemyController target)
     {
         transform.position = position;
@@ -29,7 +38,7 @@ public class Amno : MonoBehaviour
     {
         if (ready)
         {
-            //transform.LookAt(Target.gameObject.transform);
+            // move towards target
             Vector3 hereToTarget = Target.gameObject.transform.position - transform.position;
             transform.Translate(hereToTarget.normalized * TravelSpeed);
 
@@ -43,7 +52,7 @@ public class Amno : MonoBehaviour
                     Destroy(gameObject);
                     return;
                 }
-                // flag a miss so that it doesn't get reevaluated
+                // after a miss, we stop checking for collisions
                 else
                 {
                     missed = true;
@@ -53,11 +62,10 @@ public class Amno : MonoBehaviour
             // check if bullet is off screen
             if (!renderer.isVisible)
             {
+                // remove bullet
                 Destroy(gameObject);
                 return;
             }
         }
     }
-
-
 }

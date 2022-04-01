@@ -36,6 +36,7 @@ public class TowerBehaviour : MonoBehaviour
         StartCoroutine(ShootAtInterval());
     }
 
+    // shoot the current amno type at the nearest enemy
     IEnumerator ShootAtInterval()
     {
         EnemyController nearestEnemy = GetNearestEnemy();
@@ -45,12 +46,14 @@ public class TowerBehaviour : MonoBehaviour
             newbullet.SetupBullet(transform.position, nearestEnemy);
         }
 
+        // wait then go again
         yield return new WaitForSeconds(ShotInterval);
         StartCoroutine(ShootAtInterval());
 
         yield break;
     }
 
+    // return the nearest enemy currently in the range circle
     EnemyController GetNearestEnemy()
     {
         EnemyController target = null;
@@ -85,7 +88,7 @@ public class TowerBehaviour : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        // check for enemies in range
+        // update list of enemies in range
         enemiesInRange = new List<EnemyController>();
         foreach(EnemyController enemy in EM.enemies)
         {
@@ -108,6 +111,8 @@ public class TowerBehaviour : MonoBehaviour
         RangeCircle.SetActive(false);
     }
 
+
+    // update range circle scale to show attack range
     public void UpdateRangeCircleSize(float size)
     {
         RangeCircleSize = size;

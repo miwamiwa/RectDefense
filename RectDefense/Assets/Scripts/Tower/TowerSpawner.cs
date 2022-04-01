@@ -4,10 +4,15 @@ using UnityEngine;
 
 public class TowerSpawner : MonoBehaviour
 {
+    // did we spawn a tower already
     public bool TowerSpawned = false;
+
+    // tower to spawn
     public GameObject BasicTower;
-    public Vector3 SpawnOffset = new Vector3(0f, 0.2f, -0.01f);
     public TowerBehaviour Tower;
+
+    // offset the tower's sprite?
+    public Vector3 SpawnOffset = new Vector3(0f, 0.2f, -0.01f);   
 
     // Start is called before the first frame update
     void Start()

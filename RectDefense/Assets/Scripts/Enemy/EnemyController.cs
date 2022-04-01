@@ -5,24 +5,47 @@ using UnityEngine.Tilemaps;
 
 public class EnemyController : MonoBehaviour
 {
-    public Vector2 Direction = new Vector2(0f, 0f);
-    public GameObject Highlight;
-    float TickLength = 1f;
-    int PeekDistance = 9;
+    // references
     MainManager MM;
     EnemiesManager EM;
+    // my health bar
+    public HealthBar healthBar;
+
+    // currentDirection
+    public Vector2 Direction = new Vector2(0f, 0f);
+
+    // circle used to highlight enemy
+    public GameObject Highlight;
+
+    // time it takes to travel 1 square
+    float TickLength = 1f;
+
+    // how many squares to i look at to check for turns
+    int PeekDistance = 9;
+    
+    // grid coordinates
     public Vector3Int coords;
-    public bool ready = false;
+
+    // prevent u-turns 
     bool TurnedCorner = false;
+
+    // ready to start
+    public bool ready = false;
+    
     public int UID = -1;
+
+    // this is to deal with multiple towers marking me as in range
     public int markCounter = 0;
+
+    // rip
     bool dead = false;
 
+    // health
     public float MaxHealth = 24f;
     float Health = 0f;
-    public float HitRange = 0.2f;
 
-    public HealthBar healthBar;
+    // range at which bullet hits me
+    public float HitRange = 0.2f;
 
     // Start is called before the first frame update
     void Start()
@@ -32,6 +55,7 @@ public class EnemyController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        // display/remove marker if marked
         markCounter--;
         if (markCounter <= 0) NoHighlight();
         else HighlightMe();
@@ -43,17 +67,29 @@ public class EnemyController : MonoBehaviour
     public void SetupEnemy(Vector3Int position, Vector2 direction, float tickLength, MainManager mm, EnemiesManager em, int uid)
     {
         NoHighlight();
+
+        // get params and references from EnemiesManager
         Direction = direction;
         TickLength = tickLength;
         MM = mm;
         EM = em;
+
+        // place on start tile
         coords = position;
         transform.position = MM.PathGrid.CellToWorld(position);
+
+        // ready to go
         ready = true;
         UID = uid;
 
+        // start moving
         StartCoroutine(MoveAlong());
     }
+
+
+    // MoveAlong()
+    //
+    // move to next square
 
     IEnumerator MoveAlong()
     {
@@ -66,8 +102,6 @@ public class EnemyController : MonoBehaviour
         {
             yield break;
         }
-
-        //Debug.Log(coord2d);
 
         // 0. check for end reached
         if (EM.FinishTiles.Contains(coord2d))
@@ -153,6 +187,7 @@ public class EnemyController : MonoBehaviour
         yield break;
     }
 
+    // Convert Vector2 (coordinates from Start/Finish lists) to Vector3 (coordinates)
     public Vector3Int V2ToV3Int (Vector2 direction)
     {
         return new Vector3Int(Mathf.RoundToInt(direction.x), Mathf.RoundToInt(direction.y), 0);
@@ -166,7 +201,7 @@ public class EnemyController : MonoBehaviour
     {
         bool result = true;
 
-        // if there are any empty tiles in peek range, we can't turn
+        // if there are any empty (non-path) tiles in peek range, we can't turn
         for(int i=0; i<PeekDistance; i++)
         {
             TileBase tile = MM.PathTilemap.GetTile(coordinate + new Vector3Int(Mathf.RoundToInt(dir.x * PeekDistance), Mathf.RoundToInt(dir.y * PeekDistance), 0));
@@ -176,6 +211,10 @@ public class EnemyController : MonoBehaviour
         return result;
     }
 
+
+    // GetCurrentLeft()
+    //
+    // which way is my left?
     Vector2 GetCurrentLeft()
     {
         if (Direction == Vector2.left) return Vector2.down;
@@ -184,7 +223,9 @@ public class EnemyController : MonoBehaviour
         else return Vector2.left;
     }
 
-
+    // MoveTo
+    //
+    // do the fine movement stuff between tiles
     void MoveTo(Vector2 position)
     {
         if(dead) return;
@@ -199,6 +240,9 @@ public class EnemyController : MonoBehaviour
         StartCoroutine(MoveBetweenPoints(p2, fineTick, deltaPos, numFineTicks-1));
     }
 
+    // MoveBetweenPoints
+    //
+    // move between tiles
     IEnumerator MoveBetweenPoints(Vector2 FinalPos, float fineTick, float delta, int numFineTicks)
     {
         while (numFineTicks > 0)
@@ -214,7 +258,9 @@ public class EnemyController : MonoBehaviour
         yield break;
     }
 
-
+    // SubtractHealth()
+    //
+    // called in Amno.cs: subtract health and show health bar
     public void SubtractHealth(float value)
     {
         Health = Mathf.Max(0f, Health - value);
@@ -237,15 +283,17 @@ public class EnemyController : MonoBehaviour
         }
     }
 
+
+    // Enemy is dead. Wait a moment then remove.
     IEnumerator DeadAnimation()
     {
         yield return new WaitForSeconds(1f);
         Destroy(gameObject);
     }
 
+    // Enemy successfully reached the end!
     void ReachEnd()
     {
-        //Debug.Log("Enemy "+UID+" reached the end");
         EM.enemies.Remove(this);
         EM.TallySuccessfulEnemy();
         Destroy(gameObject);

@@ -5,42 +5,44 @@ using UnityEngine.Tilemaps;
 
 public class EnemiesManager : MonoBehaviour
 {
+    // references
+    MainManager MM;
+    LevelManager LM;
+
+    // Tile names used for lookup
     public const string StartTileName = "StartSquare";
     public const string EndTileName = "EndSquare";
 
+    // stats for debug reports
     int successfulEnemies = 0;
     int deadEnemies = 0;
 
+    // enemy we are spawning
     public GameObject BasicEnemy;
-    MainManager MM;
-    LevelManager LM;
+    
+    // all enemies
     public List<EnemyController> enemies = new List<EnemyController>();
+
+    // path start and end points 
+    public List<Vector2> StartTiles = new List<Vector2>();
+    public List<Vector2> FinishTiles = new List<Vector2>();
 
     // which way do enemies go from start tiles
     public Vector2 StartDirection = new Vector2(1, 0);
 
-    // how many enemies do we spawn in this level
-    //public int EnemiesPerWave = 4;
+    // check to repeat level
     public bool ContinuousSpawning = false;
-    //public int enemiesSpawnedThisWave = 0;
-   // public int enemiesSpawnedTotal = 0;
 
-
-    //public int Cutoff = 100;
-
-    // enemy spawn timing
+    // initial wait 
     public float FirstEnemyTime = 1f;
+    // interval between groups
     public float Interval = 1f;
+    // interval between enemies of same group
     public float shortInterval = 0.2f;
-    //public float Spread = 0.2f;
 
-    // time it takes to travel 1 square
+    // enemy speed (time it takes to travel 1 square)
     public float EnemyTickLength = 1f;
-
-    // start and end points 
-    public List<Vector2> StartTiles = new List<Vector2>();
-    public List<Vector2> FinishTiles = new List<Vector2>();
-
+ 
     // enemy UID
     int enemyUIDCounter = 0;
 
@@ -49,10 +51,15 @@ public class EnemiesManager : MonoBehaviour
     {
         MM = GetComponent<MainManager>();
         LM = GetComponent<LevelManager>();
+
+        // read data from the Grid object
         GetStartAndFinishTiles();
 
+        // Load this level, with its phases and enemy numbers
         LM.LoadLevelData();
         LevelManager.CurrentPhase = 0;
+
+        // Prepare a wave of enemies and start spawning
         GenerateEnemies();
     }
 
@@ -79,19 +86,13 @@ public class EnemiesManager : MonoBehaviour
         // randomize order
         HashSet<int> indices = new HashSet<int>();
         List<int> orderedGroups = new List<int>();
-
         while (orderedGroups.Count < AllGroups.Count)
         {
             int i = Mathf.FloorToInt(Random.Range(0f, AllGroups.Count - 0.01f));
-            //Debug.Log(i +" "+ AllGroups.Count);
             if (indices.Add(i)) orderedGroups.Add(AllGroups[i]);
         }
 
-        // good to go!
-
-        
-
-        // let's start
+        // let's start generating
         StartCoroutine(SpawnEnemiesAtInterval(orderedGroups));
     }
 
@@ -106,7 +107,6 @@ public class EnemiesManager : MonoBehaviour
 
         // reset counters
         int t = 0; // position along start tiles
-        //enemiesSpawnedThisWave = 0;
         int groupsSpawned = 0;
 
         while (groupsSpawned < Groups.Count)
@@ -126,14 +126,14 @@ public class EnemiesManager : MonoBehaviour
 
                 // alternate start tiles
                 t = (t + 1) % StartTiles.Count;
+
+                // chance to wait a little between enemies of same group
                 yield return new WaitForSeconds(Mathf.RoundToInt(Random.Range(0f, 3f)) * shortInterval);
             }
             
 
             // wait for next spawn
             yield return new WaitForSeconds(Interval);
-            //enemiesSpawnedThisWave++;
-            //enemiesSpawnedTotal++;
             groupsSpawned++;
             
         }
@@ -161,20 +161,16 @@ public class EnemiesManager : MonoBehaviour
     // GetStartAndFinishTiles()
     //
     // Search Tilemap for end points
+
     void GetStartAndFinishTiles()
     {
+        // get tiles from tilemap
         Grid grid = MM.PathGrid;
         Tilemap tilemap = MM.PathTilemap;
-
-        Debug.Log(tilemap.GetLayoutCellCenter());
-
         BoundsInt bounds = tilemap.cellBounds;
-        //Debug.Log(bounds.center);
-        //Debug.Log(bounds.xMin);
-        //Debug.Log(bounds.yMin);
-
         TileBase[] allTiles = tilemap.GetTilesBlock(bounds);
 
+        // create a list of start tiles and finish tiles
         for (int x = 0; x < bounds.size.x; x++)
         {
             for (int y = 0; y < bounds.size.y; y++)
@@ -189,6 +185,10 @@ public class EnemiesManager : MonoBehaviour
         }
     }
 
+    // CheckCollision()
+    //
+    // check if there is already an enemy on the tile enemy is moving to
+
     public bool CheckCollision(Vector2 tile)
     {
         bool collided = false;
@@ -200,6 +200,9 @@ public class EnemiesManager : MonoBehaviour
 
         return collided;
     }
+
+
+    // stat reporting: 
 
     public void TallySuccessfulEnemy()
     {
